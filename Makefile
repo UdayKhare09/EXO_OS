@@ -1,39 +1,61 @@
-# Makefile for bootloader and kernel
+# Makefile for EXO_OS
 
-.PHONY: all clean run
+# Tools
+ASM=nasm
+CC=gcc
+LD=ld
+QEMU=qemu-system-x86_64
 
-C_SOURCES = $(wildcard kernel/*.c)
-C_OBJECTS = $(patsubst kernel/%.c, build/%.o, $(C_SOURCES))
-CC = gcc
-CFLAGS = -m32 -fno-pie -ffreestanding -fno-builtin -nostdlib -nostdinc -Wall -Wextra
+# Flags
+ASMFLAGS=-f elf32
+CFLAGS=-m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -ffreestanding -Wall -Wextra
+LDFLAGS=-m elf_i386 -T link.ld
 
-all: build/os-image
+# Directories
+BUILD=build
+BOOTLOADER=bootloader
+KERNEL=kernel
 
-build:
-	mkdir -p build
+# Files
+BOOT_SRC=$(BOOTLOADER)/boot.asm
+KERNEL_C_SRCS=$(wildcard $(KERNEL)/*.c)
+KERNEL_OBJ=$(patsubst $(KERNEL)/%.c,$(BUILD)/%.o,$(KERNEL_C_SRCS))
 
-# Build the kernel binary
-build/kernel.bin: build/kernel_entry.o ${C_OBJECTS}
-	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+# Output files
+BOOTLOADER_BIN=$(BUILD)/boot.bin
+KERNEL_BIN=$(BUILD)/kernel.bin
+OS_IMAGE=$(BUILD)/exos.img
 
-# Compile C kernel files
-build/%.o: kernel/%.c build
-	${CC} ${CFLAGS} -c $< -o $@
+all: dirs $(OS_IMAGE)
 
-# Compile kernel entry assembly file
-build/kernel_entry.o: kernel/kernel_entry.asm build
-	nasm $< -f elf -o $@
+dirs:
+	mkdir -p $(BUILD)
 
-# Build the bootloader
-build/boot.bin: bootloader/boot.asm build
-	nasm -f bin $< -o $@
+# Create the OS image by concatenating boot sector and kernel
+$(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
+	cat $(BOOTLOADER_BIN) $(KERNEL_BIN) > $(OS_IMAGE)
+	# Pad the image to make it bootable
+	dd if=/dev/zero bs=512 count=2880 >> $(OS_IMAGE)
+	dd if=$(OS_IMAGE) of=$(OS_IMAGE) bs=512 count=2880 conv=notrunc
 
-# Combine bootloader and kernel into a single disk image
-build/os-image: build/boot.bin build/kernel.bin
-	cat $^ > $@
+# Compile bootloader
+$(BOOTLOADER_BIN): $(BOOT_SRC)
+	$(ASM) -f bin -o $@ $<
 
-run: build/os-image
-	qemu-system-i386 -fda $<
+# Compile kernel object files
+$(BUILD)/%.o: $(KERNEL)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# Link kernel - update to create a flat binary
+$(KERNEL_BIN): $(KERNEL_OBJ)
+	$(LD) $(LDFLAGS) -o $(BUILD)/kernel.elf $^
+	objcopy -O binary $(BUILD)/kernel.elf $(KERNEL_BIN)
+
+# Run in QEMU
+run: $(OS_IMAGE)
+	$(QEMU) -drive format=raw,file=$(OS_IMAGE)
 
 clean:
-	rm -rf build
+	rm -rf $(BUILD)
+
+.PHONY: all dirs run clean
