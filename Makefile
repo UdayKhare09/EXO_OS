@@ -19,10 +19,11 @@ KERNEL=$(SRC)/kernel
 PROGRAMS=$(SRC)/programs
 LIBS=$(SRC)/libs
 DRIVERS=$(KERNEL)/drivers
+MM=$(KERNEL)/mm
 
 # Files
 BOOT_SRC=$(BOOTLOADER)/boot.asm
-KERNEL_C_SRCS=$(wildcard $(KERNEL)/*.c) $(wildcard $(PROGRAMS)/*.c) $(wildcard $(LIBS)/*.c) $(wildcard $(DRIVERS)/*.c)
+KERNEL_C_SRCS=$(wildcard $(KERNEL)/*.c) $(wildcard $(PROGRAMS)/*.c) $(wildcard $(LIBS)/*.c) $(wildcard $(DRIVERS)/*.c) $(wildcard $(MM)/*.c)
 KERNEL_OBJ=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(KERNEL_C_SRCS))
 
 # Output files
@@ -38,6 +39,7 @@ dirs:
 	mkdir -p $(BUILD)/programs
 	mkdir -p $(BUILD)/libs
 	mkdir -p $(BUILD)/kernel/drivers
+	mkdir -p $(BUILD)/kernel/mm
 
 # Create the OS image by concatenating boot sector and kernel
 $(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
