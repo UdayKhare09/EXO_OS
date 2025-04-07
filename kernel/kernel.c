@@ -12,14 +12,6 @@ typedef unsigned long long uint64_t;
 
 // Kernel entry point
 void kernel_main() {
-    // Initialize subsystems
-    terminal_initialize();
-    keyboard_initialize();
-
-    // Display welcome message
-    terminal_write("Welcome to EXO_OS!\n");
-    terminal_write("32-bit protected mode kernel initialized.\n");
-
     // Initialize and run the shell
     shell_initialize();
     shell_run();

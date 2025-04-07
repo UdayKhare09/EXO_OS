@@ -23,7 +23,7 @@ uint16_t make_vga_entry(char c, uint8_t color) {
 void terminal_initialize() {
     terminal_row = 0;
     terminal_column = 0;
-    terminal_color = make_color(VGA_COLOR_WHITE, VGA_COLOR_BLUE);
+    terminal_color = make_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
     terminal_buffer = (uint16_t*) VGA_MEMORY;
 
     // Clear the screen
@@ -45,7 +45,17 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 void terminal_newline() {
     terminal_column = 0;
     if (++terminal_row == VGA_HEIGHT) {
-        terminal_row = 0;  // Simple scrolling - just wrap around for now
+        // Scroll the screen up by one row
+        for (size_t y = 1; y < VGA_HEIGHT; y++) {
+            for (size_t x = 0; x < VGA_WIDTH; x++) {
+                terminal_buffer[(y - 1) * VGA_WIDTH + x] = terminal_buffer[y * VGA_WIDTH + x];
+            }
+        }
+        // Clear the last row
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            terminal_buffer[(VGA_HEIGHT - 1) * VGA_WIDTH + x] = make_vga_entry(' ', terminal_color);
+        }
+        terminal_row = VGA_HEIGHT - 1;
     }
 }
 
@@ -54,6 +64,15 @@ void terminal_putchar(char c) {
     if (c == '\n') {
         terminal_newline();
         return;
+    } else if (c == '\b') {
+        if (terminal_column > 0) {
+            terminal_column--;
+        } else if (terminal_row > 0) {
+            terminal_row--;
+            terminal_column = VGA_WIDTH - 1;
+        }
+        terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+        return;
     }
 
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
@@ -61,7 +80,6 @@ void terminal_putchar(char c) {
         terminal_newline();
     }
 }
-
 // Write a string to the terminal
 void terminal_write(const char* data) {
     while (*data) {

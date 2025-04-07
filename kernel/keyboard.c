@@ -12,6 +12,15 @@ static const char scancode_to_ascii[] = {
     '-', 0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+static const char scancode_to_ascii_shift[] = {
+    0, 0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',
+    '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
+    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~',
+    0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0,
+    '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    '-', 0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
 // Buffer for keyboard input
 #define KEYBOARD_BUFFER_SIZE 256
 static char keyboard_buffer[KEYBOARD_BUFFER_SIZE];
@@ -40,12 +49,12 @@ char keyboard_getchar(void) {
     return c;
 }
 
-// kernel/keyboard.c
 void keyboard_read_line(char* buffer, size_t max_size) {
     size_t i = 0;
     char key;
     uint8_t scancode;
     int scanning = 1;
+    int shift_pressed = 0;
 
     // Clear input buffer
     buffer_read_pos = buffer_write_pos = 0;
@@ -56,6 +65,9 @@ void keyboard_read_line(char* buffer, size_t max_size) {
 
         // Check if it's a key release (bit 7 set)
         if (scancode & 0x80) {
+            if (scancode == 0xAA || scancode == 0xB6) { // Left or Right Shift release
+                shift_pressed = 0;
+            }
             key_release_received = 1;
             continue;
         }
@@ -65,9 +77,15 @@ void keyboard_read_line(char* buffer, size_t max_size) {
             previous_scancode = scancode;
             key_release_received = 0;
 
+            // Check for shift key press
+            if (scancode == 0x2A || scancode == 0x36) { // Left or Right Shift press
+                shift_pressed = 1;
+                continue;
+            }
+
             // Convert scancode to ASCII
             if (scancode < sizeof(scancode_to_ascii)) {
-                key = scancode_to_ascii[scancode];
+                key = shift_pressed ? scancode_to_ascii_shift[scancode] : scancode_to_ascii[scancode];
 
                 // Process valid keys only
                 if (key) {
