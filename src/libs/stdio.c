@@ -6,7 +6,7 @@
 
 
 // Convert integer to string
-static void int_to_string(int value, char* str, int base) {
+void int_to_string(int value, char* str, int base) {
     // Handle negative numbers
     int i = 0;
     int negative = 0;
