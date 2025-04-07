@@ -1,4 +1,3 @@
-// kernel/keyboard.c
 #include "keyboard.h"
 #include "io.h"
 

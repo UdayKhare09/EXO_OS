@@ -1,8 +1,7 @@
-// kernel/io.h
 #ifndef IO_H
 #define IO_H
 
-#include "terminal.h"
+#include "../terminal.h"
 
 // I/O port functions
 static inline uint8_t inb(uint16_t port) {

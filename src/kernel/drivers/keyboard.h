@@ -1,8 +1,7 @@
-// kernel/keyboard.h
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include "terminal.h"
+#include "../terminal.h"
 
 // IO port definitions
 #define KEYBOARD_DATA_PORT 0x60

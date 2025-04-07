@@ -1,4 +1,3 @@
-// kernel/terminal.c
 #include "terminal.h"
 
 // Terminal variables

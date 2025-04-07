@@ -1,9 +1,8 @@
-// kernel/kernel.c
 // EXO_OS kernel
 
 // Include headers
 #include "terminal.h"
-#include "keyboard.h"
+#include "drivers/keyboard.h"
 #include "shell.h"
 
 // Define any additional types needed by kernel

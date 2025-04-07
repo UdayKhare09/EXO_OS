@@ -1,8 +1,7 @@
-// kernel/shell.c
 #include "shell.h"
 #include "terminal.h"
-#include "io.h"
-#include "stdio.h"
+#include "drivers/io.h"
+#include "../programs/test.h"
 
 // Command handler function type
 typedef void (*command_handler_t)(char* args);
@@ -20,6 +19,7 @@ void cmd_clear(char* args);
 void cmd_echo(char* args);
 void cmd_info(char* args);
 void cmd_reboot(char* args);
+void cmd_test(char* args);
 
 // Command table
 static const command_t commands[] = {
@@ -28,6 +28,7 @@ static const command_t commands[] = {
     {"echo", cmd_echo, "Display a message"},
     {"info", cmd_info, "Display system information"},
     {"reboot", cmd_reboot, "Reboot the system"},
+    {"test", cmd_test, "Run test program"},
 };
 
 static const int num_commands = sizeof(commands) / sizeof(command_t);
@@ -144,7 +145,6 @@ void cmd_info(char* args) {
     terminal_write("EXO_OS - A simple 32-bit operating system\n");
     terminal_write("Developed by: UdayKhare09\n");
     terminal_write("Architecture: x86 (32-bit)\n");
-    println("Hi test for println %c %d %x %s %%", 'A', -123, 0x7B, "Hello World");
     (void)args; // Suppress unused parameter warning
 }
 
@@ -163,5 +163,10 @@ void cmd_reboot(char* args) {
     } while (temp & 2);
 
     outb(KEYBOARD_STATUS_PORT, 0xFE); // Reset CPU
+    (void)args; // Suppress unused parameter warning
+}
+
+void cmd_test(char* args) {
+    test();
     (void)args; // Suppress unused parameter warning
 }

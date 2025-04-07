@@ -2,7 +2,7 @@
 // Created by uday on 4/7/25.
 //
 
-#include "terminal.h"
+#include "../kernel/terminal.h"
 
 
 // Convert integer to string

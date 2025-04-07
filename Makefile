@@ -13,13 +13,17 @@ LDFLAGS=-m elf_i386 -T link.ld
 
 # Directories
 BUILD=build
-BOOTLOADER=bootloader
-KERNEL=kernel
+SRC=src
+BOOTLOADER=$(SRC)/bootloader
+KERNEL=$(SRC)/kernel
+PROGRAMS=$(SRC)/programs
+LIBS=$(SRC)/libs
+DRIVERS=$(KERNEL)/drivers
 
 # Files
 BOOT_SRC=$(BOOTLOADER)/boot.asm
-KERNEL_C_SRCS=$(wildcard $(KERNEL)/*.c)
-KERNEL_OBJ=$(patsubst $(KERNEL)/%.c,$(BUILD)/%.o,$(KERNEL_C_SRCS))
+KERNEL_C_SRCS=$(wildcard $(KERNEL)/*.c) $(wildcard $(PROGRAMS)/*.c) $(wildcard $(LIBS)/*.c) $(wildcard $(DRIVERS)/*.c)
+KERNEL_OBJ=$(patsubst $(SRC)/%.c,$(BUILD)/%.o,$(KERNEL_C_SRCS))
 
 # Output files
 BOOTLOADER_BIN=$(BUILD)/boot.bin
@@ -30,6 +34,10 @@ all: dirs $(OS_IMAGE)
 
 dirs:
 	mkdir -p $(BUILD)
+	mkdir -p $(BUILD)/kernel
+	mkdir -p $(BUILD)/programs
+	mkdir -p $(BUILD)/libs
+	mkdir -p $(BUILD)/kernel/drivers
 
 # Create the OS image by concatenating boot sector and kernel
 $(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
@@ -42,8 +50,9 @@ $(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 $(BOOTLOADER_BIN): $(BOOT_SRC)
 	$(ASM) -f bin -o $@ $<
 
-# Compile kernel object files
-$(BUILD)/%.o: $(KERNEL)/%.c
+# Compile kernel object files - make sure build directories exist
+$(BUILD)/%.o: $(SRC)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Link kernel - update to create a flat binary
