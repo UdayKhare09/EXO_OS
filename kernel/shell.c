@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "terminal.h"
 #include "io.h"
+#include "stdio.h"
 
 // Command handler function type
 typedef void (*command_handler_t)(char* args);
@@ -143,6 +144,7 @@ void cmd_info(char* args) {
     terminal_write("EXO_OS - A simple 32-bit operating system\n");
     terminal_write("Developed by: UdayKhare09\n");
     terminal_write("Architecture: x86 (32-bit)\n");
+    println("Hi test for println %c %d %x %s %%", 'A', -123, 0x7B, "Hello World");
     (void)args; // Suppress unused parameter warning
 }
 
