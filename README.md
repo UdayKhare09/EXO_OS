@@ -1,18 +1,12 @@
 # EXO_OS 🚀
 
 ## Overview
-EXO_OS is a simple 32-bit operating system developed from scratch. It features a basic kernel, a bootloader, and a shell interface with common commands.
+EXO_OS is a simple 32-bit operating system developed from scratch. It features a basic kernel, a bootloader, and essential system functionality.
 
 ## Features ✨
 - Custom bootloader that switches from 16-bit real mode to 32-bit protected mode
 - Terminal with VGA text mode support
 - Keyboard input handling
-- Simple shell with basic commands:
-    - `help` - Show available commands
-    - `clear` - Clear the screen
-    - `echo` - Display a message
-    - `info` - Display system information
-    - `reboot` - Reboot the system
 - Basic stdio implementation (printf/println)
 
 ## Building 🔨
@@ -45,7 +39,6 @@ make run
 - Boots into 32-bit protected mode
 - Uses a flat memory model
 - Implements basic I/O through VGA text buffer and PS/2 keyboard
-- Contains a simple command-line interface
 
 ## Future Improvements 🔮
 - Memory management system

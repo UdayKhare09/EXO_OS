@@ -3,7 +3,7 @@
 // Include headers
 #include "terminal.h"
 #include "drivers/keyboard.h"
-#include "shell.h"
+#include "../programs/test.h"
 
 // Define any additional types needed by kernel
 typedef unsigned int uint32_t;
@@ -11,10 +11,9 @@ typedef unsigned long long uint64_t;
 
 // Kernel entry point
 void kernel_main() {
-    // Initialize and run the shell
-    shell_initialize();
-    shell_run();
-
+	keyboard_initialize();
+    terminal_initialize();
+	test();
     // We should never get here
 }
 

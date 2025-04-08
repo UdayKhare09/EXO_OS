@@ -10,5 +10,6 @@
 
 void printf(const char* format, ...);
 void println(const char* format, ...);
+void int_to_string(int value, char* str, int base);
 
 #endif //STDIO_H
