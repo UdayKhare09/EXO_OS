@@ -1,55 +1,24 @@
-
 #include "test.h"
 #include "../libs/stdio.h"
-#include "../kernel/mm/memory.h"
+#include "shell.h"
+
+// Correct the function signature to return int as per cmd_function type
+static int cmd_test_func(int argc, char** argv) {
+    printf("Command executed with %d arguments.\n", argc);
+    for (int i = 0; i < argc; i++) {
+        printf("Argument %d: %s\n", i, argv[i]);
+    }
+    return 0;  // Return success
+}
 
 void test() {
-    // Test the malloc function
-    char* buffer = (char*)malloc(100);
-    if (buffer) {
-        printf("Allocated 100 bytes of memory.\n");
-        // Use the buffer
-        for (int i = 0; i < 100; i++) {
-            buffer[i] = 'A' + (i % 26);
-        }
-        buffer[99] = '\0'; // Null-terminate the string
-        printf("Buffer content: %s\n", buffer);
-    } else {
-        printf("Memory allocation failed.\n");
-    }
-    printf("Freed allocated memory.\n");
-    // Test the realloc function
-    char* new_buffer = (char*)malloc(50);
-    if (new_buffer) {
-        printf("Allocated 50 bytes of memory.\n");
-        // Use the new buffer
-        for (int i = 0; i < 50; i++) {
-            new_buffer[i] = 'B' + (i % 26);
-        }
-        new_buffer[49] = '\0'; // Null-terminate the string
-        printf("New buffer content: %s\n", new_buffer);
-    } else {
-        printf("Memory allocation failed.\n");
-    }
-    free(new_buffer);
-    printf("Freed new buffer.\n");
-    free(buffer);
-    printf("Freed original buffer.\n");
+    // Register the test command with the shell
+    int result = shell_register_command("custom_test", cmd_test_func, "Custom test command");
 
-    char* new_buffer2 = (char*)malloc(50);
-    if (new_buffer2) {
-        printf("Allocated 50 bytes of memory again.\n");
-        // Use the new buffer
-        for (int i = 0; i < 50; i++) {
-            new_buffer2[i] = 'C' + (i % 26);
-        }
-        new_buffer2[49] = '\0'; // Null-terminate the string
-        printf("New buffer content: %s\n", new_buffer2);
+    if (result == 0) {
+        printf("Custom test command registered successfully.\n");
+        printf("Try it by typing 'custom_test arg1 arg2' in the shell.\n");
     } else {
-        printf("Memory allocation failed.\n");
+        printf("Failed to register custom test command (command registry full).\n");
     }
-    free(new_buffer2);
-    printf("Freed new buffer2.\n");
-
-    printf("Test completed.\n");
 }
