@@ -54,7 +54,7 @@ init_pm:
 ; Load kernel from disk
 load_kernel:
     mov ah, 0x02    ; BIOS read sector function
-    mov al, 20      ; Number of sectors to read
+    mov al, 53      ; Number of sectors to read 53 * 512 bytes = 27,136 bytes
     mov ch, 0       ; Cylinder number
     mov dh, 0       ; Head number
     mov cl, 2       ; Sector number (starts from 1, boot sector is 1)

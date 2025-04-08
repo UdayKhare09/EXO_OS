@@ -45,8 +45,8 @@ dirs:
 $(OS_IMAGE): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 	cat $(BOOTLOADER_BIN) $(KERNEL_BIN) > $(OS_IMAGE)
 	# Pad the image to make it bootable
-	dd if=/dev/zero bs=512 count=2880 >> $(OS_IMAGE)
-	dd if=$(OS_IMAGE) of=$(OS_IMAGE) bs=512 count=2880 conv=notrunc
+	dd if=/dev/zero bs=512 count=4096 >> $(OS_IMAGE)
+	dd if=$(OS_IMAGE) of=$(OS_IMAGE) bs=512 count=4096 conv=notrunc
 
 # Compile bootloader
 $(BOOTLOADER_BIN): $(BOOT_SRC)
