@@ -5,12 +5,17 @@
 #include "../kernel/terminal.h"
 
 
+// %c - Character
+// %d - Decimal
+// %x - Hexadecimal
+// %s - String
+// %% - Percent sign
+
 // Convert integer to string
-void int_to_string(int value, char* str, int base) {
+void int_to_string(int value, char* str, const int base) {
     // Handle negative numbers
     int i = 0;
     int negative = 0;
-    unsigned int temp;
 
     // Handle 0 explicitly
     if (value == 0) {
@@ -25,11 +30,11 @@ void int_to_string(int value, char* str, int base) {
         value = -value;
     }
 
-    temp = (unsigned int)value;
+    unsigned int temp = value;
 
     // Process digits
     while (temp != 0) {
-        int remainder = temp % base;
+        const int remainder = temp % base;
         str[i++] = (remainder < 10) ? remainder + '0' : remainder - 10 + 'a';
         temp = temp / base;
     }
@@ -46,9 +51,9 @@ void int_to_string(int value, char* str, int base) {
     int start = 0;
     int end = i - 1;
     while (start < end) {
-        char temp = str[start];
+        const char temp1 = str[start];
         str[start] = str[end];
-        str[end] = temp;
+        str[end] = temp1;
         start++;
         end--;
     }
@@ -57,7 +62,6 @@ void int_to_string(int value, char* str, int base) {
 // Printf implementation
 void printf(const char* format, ...) {
     char buffer[256];
-    char int_buffer[32];
     int i = 0;
     int j = 0;
 
@@ -66,6 +70,7 @@ void printf(const char* format, ...) {
 
     while (format[i]) {
         if (format[i] == '%' && format[i+1]) {
+            char int_buffer[32];
             i++;
             switch (format[i]) {
                 case 'c': {
@@ -75,7 +80,7 @@ void printf(const char* format, ...) {
                 }
                 case 'd': {
                     // Decimal
-                    int val = __builtin_va_arg(args, int);
+                    const int val = __builtin_va_arg(args, int);
                     int_to_string(val, int_buffer, 10);
 
                     // Copy to main buffer
@@ -87,7 +92,7 @@ void printf(const char* format, ...) {
                 }
                 case 'x': {
                     // Hexadecimal
-                    int val = __builtin_va_arg(args, int);
+                    const int val = __builtin_va_arg(args, int);
                     int_to_string(val, int_buffer, 16);
 
                     // Copy to main buffer
@@ -102,6 +107,18 @@ void printf(const char* format, ...) {
                     const char* str = __builtin_va_arg(args, const char*);
                     while (*str) {
                         buffer[j++] = *str++;
+                    }
+                    break;
+                }
+                case 'p': {
+                    // Pointer
+                    const void* ptr = __builtin_va_arg(args, void*);
+                    int_to_string((uintptr_t)ptr, int_buffer, 16);
+
+                    // Copy to main buffer
+                    int k = 0;
+                    while (int_buffer[k]) {
+                        buffer[j++] = int_buffer[k++];
                     }
                     break;
                 }
@@ -140,7 +157,6 @@ void printf(const char* format, ...) {
 // Println implementation (printf with newline)
 void println(const char* format, ...) {
     char buffer[256];
-    char int_buffer[32];
     int i = 0;
     int j = 0;
 
@@ -149,6 +165,7 @@ void println(const char* format, ...) {
 
     while (format[i]) {
         if (format[i] == '%' && format[i+1]) {
+            char int_buffer[32];
             i++;
             switch (format[i]) {
                 case 'c': {
@@ -158,7 +175,7 @@ void println(const char* format, ...) {
                 }
                 case 'd': {
                     // Decimal
-                    int val = __builtin_va_arg(args, int);
+                    const int val = __builtin_va_arg(args, int);
                     int_to_string(val, int_buffer, 10);
 
                     // Copy to main buffer
@@ -170,7 +187,7 @@ void println(const char* format, ...) {
                 }
                 case 'x': {
                     // Hexadecimal
-                    int val = __builtin_va_arg(args, int);
+                    const int val = __builtin_va_arg(args, int);
                     int_to_string(val, int_buffer, 16);
 
                     // Copy to main buffer

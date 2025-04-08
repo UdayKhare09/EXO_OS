@@ -26,7 +26,7 @@ void shell_initialize(void) {
 }
 
 // Register a command with the shell
-int shell_register_command(const char* name, cmd_function function, const char* description) {
+int shell_register_command(const char* name, const cmd_function function, const char* description) {
     if (command_count >= MAX_COMMANDS) {
         return -1; // Command registry full
     }
@@ -46,7 +46,7 @@ int parse_command(char* cmdline, char** argv) {
     char* rest = cmdline;
     
     // Extract tokens separated by spaces
-    while ((token = strtok_r(rest, " ", &rest)) && argc < CMD_MAX_ARGS) {
+    while (((token = strtok_r(rest, " ", &rest))) && argc < CMD_MAX_ARGS) {
         argv[argc++] = token;
     }
     
@@ -55,7 +55,7 @@ int parse_command(char* cmdline, char** argv) {
 }
 
 // Execute a command
-int execute_command(int argc, char** argv) {
+int execute_command(const int argc, char** argv) {
     if (argc == 0 || argv[0][0] == '\0') {
         return 0; // Empty command
     }
@@ -74,10 +74,9 @@ int execute_command(int argc, char** argv) {
 
 // Main shell loop
 void shell_run(void) {
-    char cmdline[CMD_MAX_LENGTH];
-    char* argv[CMD_MAX_ARGS + 1]; // +1 for NULL terminator
-    
     while (1) {
+        char* argv[CMD_MAX_ARGS + 1];
+        char cmdline[CMD_MAX_LENGTH];
         // Display prompt
         printf("EXO> ");
         
@@ -86,7 +85,7 @@ void shell_run(void) {
         printf("\n");
         
         // Parse and execute command
-        int argc = parse_command(cmdline, argv);
+        const int argc = parse_command(cmdline, argv);
         execute_command(argc, argv);
     }
 }
@@ -115,7 +114,7 @@ static int cmd_help(int argc, char** argv) {
 }
 
 // Echo command
-static int cmd_echo(int argc, char** argv) {
+static int cmd_echo(const int argc, char** argv) {
     for (int i = 1; i < argc; i++) {
         printf("%s ", argv[i]);
     }
@@ -139,8 +138,6 @@ static int cmd_test(int argc, char** argv) {
 // Helper function to split a string by delimiter (strtok replacement)
 // The function saves the state between calls in 'saveptr'
 char* strtok_r(char* str, const char* delim, char** saveptr) {
-    char* token;
-    
     if (str == NULL) {
         str = *saveptr;
     }
@@ -153,7 +150,7 @@ char* strtok_r(char* str, const char* delim, char** saveptr) {
         return NULL;
     }
     
-    token = str;
+    char *token = str;
     
     // Find end of token
     str = strpbrk(str, delim);

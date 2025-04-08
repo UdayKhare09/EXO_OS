@@ -46,7 +46,7 @@ char* strcat(char* dest, const char* src) {
 }
 
 // Find first occurrence of character c in str
-char* strchr(const char* str, int c) {
+char* strchr(const char* str, const int c) {
     while (*str != (char)c) {
         if (*str == '\0') {
             return NULL;

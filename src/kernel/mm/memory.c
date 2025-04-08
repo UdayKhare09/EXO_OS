@@ -3,7 +3,7 @@
 #include "../../libs/stdio.h"
 
 // Define the size of the heap
-#define HEAP_SIZE 1024 * 1024 // 1 MB
+#define HEAP_SIZE (1024 * 1024) // 1 MB
 
 // Memory block structure
 typedef struct memory_block {
@@ -17,7 +17,7 @@ static uint8_t heap[HEAP_SIZE];
 static memory_block_t* free_list = NULL;
 
 // Align size to 8 bytes
-static size_t align(size_t size) {
+static size_t align(const size_t size) {
     return (size + 7) & ~7;
 }
 
@@ -52,12 +52,7 @@ void* malloc(size_t size) {
             }
 
             current->free = 0;
-            terminal_write("Allocated memory at: ");
-            char buffer[32];
-            int_to_string((uint64_t)current, buffer, 16);
-            terminal_write(buffer);
-            terminal_write("\n");
-            return (void*)((uint8_t*)current + sizeof(memory_block_t));
+            return (uint8_t*)current + sizeof(memory_block_t);
 
         }
         current = current->next;
@@ -86,19 +81,19 @@ void free(void* ptr) {
 }
 
 // Reallocate memory
-void* realloc(void* ptr, size_t size) {
+void* realloc(void* ptr, const size_t size) {
     if (!ptr) {
         return malloc(size);
     }
 
-    memory_block_t* block = (memory_block_t*)((uint8_t*)ptr - sizeof(memory_block_t));
+    const memory_block_t* block = (memory_block_t*)((uint8_t*)ptr - sizeof(memory_block_t));
     if (block->size >= size) {
         return ptr; // Existing block is large enough
     }
 
     void* new_ptr = malloc(size);
     if (new_ptr) {
-        size_t copy_size = block->size < size ? block->size : size;
+        const size_t copy_size = block->size < size ? block->size : size;
         for (size_t i = 0; i < copy_size; i++) {
             ((uint8_t*)new_ptr)[i] = ((uint8_t*)ptr)[i];
         }

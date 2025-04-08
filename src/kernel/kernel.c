@@ -3,7 +3,6 @@
 // Include headers
 #include "terminal.h"
 #include "drivers/keyboard.h"
-#include "../programs/test.h"
 #include "../programs/shell.h"
 
 // Define any additional types needed by kernel
@@ -28,7 +27,7 @@ void kernel_main() {
     terminal_write("Shell exited. System halted.\n");
 }
 
-void __attribute__((section(".entry"))) _start(void) {
+void __attribute__((section(".entry"))) start(void) {
     // Clear interrupts
     __asm__ volatile("cli");
 

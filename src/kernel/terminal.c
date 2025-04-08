@@ -7,14 +7,14 @@ static uint8_t terminal_color;
 static uint16_t* terminal_buffer;
 
 // Create a color attribute
-uint8_t make_color(uint8_t fg, uint8_t bg) {
+uint8_t make_color(const uint8_t fg, const uint8_t bg) {
     return fg | (bg << 4);
 }
 
 // Create a VGA entry
-uint16_t make_vga_entry(char c, uint8_t color) {
-    uint16_t c16 = c;
-    uint16_t color16 = color;
+uint16_t make_vga_entry(const char c, const uint8_t color) {
+    const uint16_t c16 = c;
+    const uint16_t color16 = color;
     return c16 | (color16 << 8);
 }
 
@@ -35,7 +35,7 @@ void terminal_initialize() {
 }
 
 // Put a character at a specific position
-void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
+void terminal_putentryat(const char c, const uint8_t color, const size_t x, const size_t y) {
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = make_vga_entry(c, color);
 }
@@ -59,7 +59,7 @@ void terminal_newline() {
 }
 
 // Put a character at the current position and advance the cursor
-void terminal_putchar(char c) {
+void terminal_putchar(const char c) {
     if (c == '\n') {
         terminal_newline();
         return;

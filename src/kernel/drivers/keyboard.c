@@ -43,15 +43,13 @@ char keyboard_getchar(void) {
         return 0; // No character available
     }
 
-    char c = keyboard_buffer[buffer_read_pos];
+    const char c = keyboard_buffer[buffer_read_pos];
     buffer_read_pos = (buffer_read_pos + 1) % KEYBOARD_BUFFER_SIZE;
     return c;
 }
 
-void keyboard_read_line(char* buffer, size_t max_size) {
+void keyboard_read_line(char* buffer, const size_t max_size) {
     size_t i = 0;
-    char key;
-    uint8_t scancode;
     int scanning = 1;
     int shift_pressed = 0;
 
@@ -60,7 +58,7 @@ void keyboard_read_line(char* buffer, size_t max_size) {
 
     while (scanning && i < max_size - 1) {
         // Wait for a key press
-        scancode = inb(KEYBOARD_DATA_PORT);
+        const uint8_t scancode = inb(KEYBOARD_DATA_PORT);
 
         // Check if it's a key release (bit 7 set)
         if (scancode & 0x80) {
@@ -84,7 +82,7 @@ void keyboard_read_line(char* buffer, size_t max_size) {
 
             // Convert scancode to ASCII
             if (scancode < sizeof(scancode_to_ascii)) {
-                key = shift_pressed ? scancode_to_ascii_shift[scancode] : scancode_to_ascii[scancode];
+                const char key = shift_pressed ? scancode_to_ascii_shift[scancode] : scancode_to_ascii[scancode];
 
                 // Process valid keys only
                 if (key) {
@@ -122,16 +120,16 @@ void keyboard_read_line(char* buffer, size_t max_size) {
 
 // Handle keyboard input (to be called by interrupt handler)
 void keyboard_handler(void) {
-    uint8_t scancode = inb(KEYBOARD_DATA_PORT);
+    const uint8_t scancode = inb(KEYBOARD_DATA_PORT);
 
     // Check if it's a key press (not a key release)
     if (!(scancode & 0x80)) {
         // Convert scancode to ASCII
         if (scancode < sizeof(scancode_to_ascii)) {
-            char c = scancode_to_ascii[scancode];
+            const char c = scancode_to_ascii[scancode];
             if (c) {
                 // Add to buffer if there's space
-                size_t next_pos = (buffer_write_pos + 1) % KEYBOARD_BUFFER_SIZE;
+                const size_t next_pos = (buffer_write_pos + 1) % KEYBOARD_BUFFER_SIZE;
                 if (next_pos != buffer_read_pos) {
                     keyboard_buffer[buffer_write_pos] = c;
                     buffer_write_pos = next_pos;

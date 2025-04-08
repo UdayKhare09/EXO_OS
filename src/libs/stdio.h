@@ -5,8 +5,6 @@
 #ifndef STDIO_H
 #define STDIO_H
 
-#include "../kernel/terminal.h"
-
 
 void printf(const char* format, ...);
 void println(const char* format, ...);
