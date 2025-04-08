@@ -3,7 +3,7 @@
 //
 
 #include "../kernel/terminal.h"
-
+#include "../kernel/drivers/keyboard.h"
 
 // %c - Character
 // %d - Decimal
@@ -234,6 +234,63 @@ void println(const char* format, ...) {
     buffer[j] = '\0';
     terminal_write(buffer);
     terminal_putchar('\n');
+
+    __builtin_va_end(args);
+}
+
+void scanf(const char* format, ...) {
+    char input_buffer[256];
+    keyboard_read_line(input_buffer, sizeof(input_buffer));
+
+    __builtin_va_list args;
+    __builtin_va_start(args, format);
+
+    const char* fmt = format;
+    char* input = input_buffer;
+
+    while (*fmt) {
+        if (*fmt == '%' && *(fmt + 1)) {
+            fmt++;
+            switch (*fmt) {
+                case 'd': { // Integer
+                    int* int_ptr = __builtin_va_arg(args, int*);
+                    *int_ptr = 0;
+                    int sign = 1;
+
+                    if (*input == '-') {
+                        sign = -1;
+                        input++;
+                    }
+
+                    while (*input >= '0' && *input <= '9') {
+                        *int_ptr = *int_ptr * 10 + (*input - '0');
+                        input++;
+                    }
+                    *int_ptr *= sign;
+                    break;
+                }
+                case 'c': { // Character
+                    char* char_ptr = __builtin_va_arg(args, char*);
+                    *char_ptr = *input;
+                    input++;
+                    break;
+                }
+                case 's': { // String (read until newline or end of buffer)
+                    char* str_ptr = __builtin_va_arg(args, char*);
+                    while (*input && *input != '\n') {
+                        *str_ptr++ = *input++;
+                    }
+                    *str_ptr = '\0';
+                    break;
+                }
+                default:
+                    break;
+            }
+        } else if (*fmt == *input) {
+            input++;
+        }
+        fmt++;
+    }
 
     __builtin_va_end(args);
 }
