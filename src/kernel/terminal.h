@@ -1,14 +1,7 @@
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
-// Define standard types
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int size_t;
-typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
-// define NULL
-#define NULL ((void*)0)
+#include "../libs/stddef.h"
 
 // Constants for VGA text mode
 #define VGA_MEMORY 0xB8000
