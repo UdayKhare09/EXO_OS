@@ -294,3 +294,10 @@ void scanf(const char* format, ...) {
 
     __builtin_va_end(args);
 }
+
+// Random number generator
+int random(const int min, const int max) {
+    static unsigned int seed = 0; // Use unsigned to avoid negative values
+    seed = (seed * 1103515245u + 12345u) & 0x7FFFFFFF; // Ensure seed stays positive
+    return min + (seed % (max - min + 1));
+}

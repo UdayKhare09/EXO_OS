@@ -10,4 +10,5 @@ void printf(const char* format, ...);
 void println(const char* format, ...);
 void int_to_string(int value, char* str, int base);
 void scanf(const char* format, ...);
+int random(int min, int max);
 #endif //STDIO_H
